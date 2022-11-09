@@ -88,3 +88,17 @@ export const signinPatient = async (req, res) => {
     res.status(500).json({ message: "Error in signing in" });
   }
 };
+
+
+export const deletePatient = async (req, res) => {
+  const id = req.params.id;
+ 
+  try {
+    const patientToDelete =  await Patient.findByIdAndDelete(id)
+    if (!patientToDelete) return res.status(404);
+    return res.status(200).send(`patient ${patientToDelete._id} deleted` );
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+};
+ 
