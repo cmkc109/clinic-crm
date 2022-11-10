@@ -1,11 +1,12 @@
 import Patient from "../model/Patient.js";
 import bcrypt from "bcryptjs";
+import { findPatientHandler, deletePatientHandler, findAllPatientsHandler} from '../services/patient.service.js'
 
 import { signJwt } from "../utils/jwt.js";
 
 export const getPatients = async (req, res) => {
   try {
-    const allPatients = await Patient.find();
+    const allPatients = await findAllPatientsHandler();
     allPatients.forEach(patient => patient.password = undefined) 
     res.status(200).json(allPatients);
   } catch (error) {
@@ -17,7 +18,7 @@ export const getPatientById = async (req, res) => {
   const id = req.params.id;
  
   try {
-    const patient =  await Patient.findById(id).lean()
+    const patient =  await findPatientHandler({_id: id}, {lean: true})
     patient.password = undefined
     if (!patient) return res.status(404);
     return res.status(200).send(patient);
@@ -39,7 +40,7 @@ export const registerPatient = async (req, res) => {
   } = req.body;
 
   try {
-    const existUser = await Patient.findOne({email});
+    const existUser = await findPatientHandler({email}, {});
     if (existUser) return res.status(400).json({ message: "User already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -71,7 +72,7 @@ export const signinPatient = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const oldUser = await Patient.findOne({ email });
+    const oldUser = await findPatientHandler({ email }, {});
     if (!oldUser) res.status(404).json({ message: "User doesn't exist" });
 
     const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
@@ -83,7 +84,7 @@ export const signinPatient = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({ result: oldUser, token });
+    res.status(200).json({ result: oldUser.email, token });
   } catch (error) {
     res.status(500).json({ message: "Error in signing in" });
   }
@@ -94,7 +95,7 @@ export const deletePatient = async (req, res) => {
   const id = req.params.id;
  
   try {
-    const patientToDelete =  await Patient.findByIdAndDelete(id)
+    const patientToDelete =  await deletePatientHandler({id}, {lean:true})
     if (!patientToDelete) return res.status(404);
     return res.status(200).send(`patient ${patientToDelete._id} deleted` );
   } catch (error) {
