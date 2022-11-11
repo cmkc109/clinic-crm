@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux'
 import { NumericFormat } from "react-number-format";
 import "./styles.css";
-import axios from "axios";
+
+import { signIn , signOut } from '../../redux/slices/auth.js'
 
 import {
   TextField,
@@ -36,21 +38,30 @@ const Form = () => {
     medicalConditions,
   } = formValues;
 
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
+
+  useEffect(() => {
+    const user = sessionStorage.getItem(isLoggedIn)
+    if (user) dispatch(signIn())
+  }, [])
+  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       alert("Passwords do not match");
       return;
     }
-    console.log(formValues, typeof age);
-    axios
-      .post("http://localhost:5000/api/register", formValues)
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+ 
+    // axios
+    //   .post("http://localhost:5000/api/register", formValues)
+    //   .then((res) => {
+    //     console.log(res.data);
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
   };
 
   const clearForm = () => {
@@ -58,6 +69,8 @@ const Form = () => {
   };
 
   return (
+    <> 
+     { isLoggedIn && <h1 style={{textAlign: "center"}}>Hi User</h1>}
     <Paper className="paper">
       <form noValidate className="form" onSubmit={handleSubmit}>
         <Typography variant="h6">Register Form</Typography>
@@ -139,8 +152,18 @@ const Form = () => {
         >
           Clear
         </Button>
+        <Button
+          variant="contained"
+          color="warning"
+          size="small"
+          onClick={() => dispatch(signOut())}
+          fullWidth
+        >
+          Sign out
+        </Button>
       </form>
     </Paper>
+    </>
   );
 };
 
