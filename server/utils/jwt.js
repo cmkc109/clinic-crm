@@ -18,16 +18,17 @@ export function signJwt(object, options) {
  export async function verifyJwt(req, res, next) {
    try {
       const token = req.headers.authorization.split(" ")[1];
-  
-      if (token) {      
-         let decodedData = jwt.verify(token, publicKey);
-         console.log(decodedData)
+      if (token) {   
+         let decodedData = jwt.verify(token, privateKey);
+         
          // req.userId = decodedData?.id;
-      }   
+      } else {
+         console.log('no such token')
+      }
       next();
 
     } catch (error) {
-      res.sendStatus(404);
+      res.sendStatus(401);
     }
 
  }

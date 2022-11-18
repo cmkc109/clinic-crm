@@ -7,6 +7,7 @@ import { signJwt } from "../utils/jwt.js";
 export const getPatients = async (req, res) => {
   try {
     const allPatients = await findAllPatientsHandler();
+    console.log(allPatients)
     allPatients.forEach(patient => patient.password = undefined) 
     res.status(200).json(allPatients);
   } catch (error) {
@@ -95,8 +96,9 @@ export const deletePatient = async (req, res) => {
   const id = req.params.id;
  
   try {
-    const patientToDelete =  await deletePatientHandler({id}, {lean:true})
-    if (!patientToDelete) return res.status(404);
+    const patientToDelete =  await findPatientHandler({id})
+    if (!patientToDelete) return res.status(404).message("Message not found");
+    await deletePatientHandler({ id })
     return res.status(200).send(`patient ${patientToDelete._id} deleted` );
   } catch (error) {
     return res.status(500).send(error.message);

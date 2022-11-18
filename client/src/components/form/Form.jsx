@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux'
 import { NumericFormat } from "react-number-format";
 import "./styles.css";
+import Nav from "../nav/Nav";
 
 import { signIn , signOut } from '../../redux/slices/auth.js'
 
@@ -70,6 +71,7 @@ const Form = () => {
 
   return (
     <> 
+    <Nav />
      { isLoggedIn && <h1 style={{textAlign: "center"}}>Hi User</h1>}
     <Paper className="paper">
       <form noValidate className="form" onSubmit={handleSubmit}>
