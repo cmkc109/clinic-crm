@@ -1,9 +1,11 @@
 import React from "react";
+import Nav from "../nav/Nav";
 
 const PatientPage = () => {
   return (
     <>
-      <div>PatientPage</div>
+      <Nav />
+      <h1>Patient Page</h1>
     </>
   );
 };
